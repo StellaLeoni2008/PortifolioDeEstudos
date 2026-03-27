@@ -247,6 +247,11 @@ body::before {
 }
 
 /* Responsividade para celular */
+@media (max-width:768px){
+  body{
+    background-attachment: scroll;
+  }
+}
 @media (max-width: 768px) {
   .grid-livros {
     grid-template-columns: repeat(2, 1fr);
