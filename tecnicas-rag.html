@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LangChain: Técnicas Avançadas de RAG - Código | Stella Bueno Leoni</title>
+  <meta name="description"
+    content="Documentação e código fonte do projeto LangChain: Técnicas Avançadas de RAG - Stella Bueno Leoni." />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .codigo-container {
+      margin-top: 1rem;
+    }
+
+    .codigo-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1.1rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: 0.25s ease;
+    }
+
+    .codigo-toggle:hover {
+      background: rgba(124, 92, 255, 0.1);
+      border-color: rgba(124, 92, 255, 0.3);
+    }
+
+    .codigo-toggle .tag-lang {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      letter-spacing: 0.5px;
+    }
+
+    .codigo-toggle .seta {
+      transition: transform 0.3s ease;
+      color: var(--text-soft);
+    }
+
+    .codigo-toggle.aberto .seta {
+      transform: rotate(180deg);
+    }
+
+    .codigo-bloco {
+      display: none;
+      margin-top: 0.5rem;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+    }
+
+    .codigo-bloco.visivel {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .codigo-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 1rem;
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .codigo-header .dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .codigo-header .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot.red { background: rgba(255, 95, 87, 0.6); }
+    .dot.yellow { background: rgba(142, 247, 200, 0.4); }
+    .dot.green { background: rgba(124, 92, 255, 0.4); }
+
+    .codigo-header .nome-arquivo {
+      font-size: 0.8rem;
+      color: var(--text-soft);
+      font-family: 'Consolas', monospace;
+    }
+
+    .btn-copiar {
+      background: none;
+      border: none;
+      color: var(--text-soft);
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      transition: 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-copiar:hover {
+      color: var(--highlight);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .btn-copiar.copiado {
+      color: var(--highlight);
+    }
+
+    .codigo-pre {
+      background: rgba(6, 8, 18, 0.8);
+      padding: 1.2rem;
+      overflow-x: auto;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 0.85rem;
+      line-height: 1.65;
+      color: var(--text-soft);
+      margin: 0;
+    }
+
+    .kw { color: #7c9cff; }
+    .str { color: #8ef7c8; }
+    .fn { color: #ffd580; }
+    .cmt { color: #5a6580; }
+    .num { color: #f78c9c; }
+    .tag { color: #7c9cff; }
+    .attr { color: #ffd580; }
+    .prop { color: #ffd580; }
+    .val { color: #8ef7c8; }
+
+    .conceitos-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.6rem;
+    }
+
+    @media (min-width: 700px) {
+      .conceitos-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .conceito-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      color: var(--text-soft);
+      font-size: 0.95rem;
+    }
+
+    .conceito-item i {
+      color: var(--secondary);
+      margin-top: 3px;
+      flex-shrink: 0;
+    }
+
+    .autor {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .autor__avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 2px solid rgba(124, 92, 255, 0.3);
+    }
+
+    .autor__nome {
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.15rem;
+    }
+
+    .autor__data {
+      font-size: 0.9rem;
+      color: var(--text-soft);
+    }
+
+    .tech-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .tech-badge {
+      font-size: 0.82rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(124, 92, 255, 0.12);
+      color: var(--secondary);
+      border: 1px solid rgba(124, 92, 255, 0.2);
+      font-weight: 600;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="cabecalho" id="inicio">
+    <div class="container">
+      <p class="cabecalho__tag">Stella Bueno Leoni</p>
+      <h1 class="cabecalho__titulo">LangChain: Técnicas Avançadas de RAG</h1>
+      <p class="cabecalho__texto">
+        Documentação e código fonte do projeto LangChain: Técnicas Avançadas de RAG.
+      </p>
+      <nav class="menu">
+        <a href="index.html">← Voltar ao Portfólio</a>
+        <a href="https://github.com/StellaLeoni2008/tecnicas_rag" target="_blank">
+          <i class="fa-brands fa-github"></i> Repositório
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="secao">
+      <div class="container">
+        <h2 class="secao__titulo">Sobre o Projeto</h2>
+
+        <div class="tech-badges">
+          <span class="tech-badge">Python</span>
+          <span class="tech-badge">LangChain</span>
+          <span class="tech-badge">Ollama</span>
+          <span class="tech-badge">Milvus</span>
+          <span class="tech-badge">RAG</span>
+        </div>
+
+        <div class="card">
+          <p>
+            O <em>LangChain: Técnicas Avançadas de RAG</em> foi desenvolvido como parte das atividades do curso
+            <strong>Alura – LangChain: Técnicas Avançadas de RAG</strong>. O objetivo do projeto foi aprofundar o
+            entendimento sobre arquiteturas de <strong>Retrieval-Augmented Generation (RAG)</strong>, explorando
+            técnicas para melhorar a recuperação de informações e a qualidade das respostas geradas por modelos de linguagem.
+          </p>
+          <br>
+          <p>
+            Durante o projeto, foi construído um pipeline capaz de carregar documentos em PDF, processá-los, gerar embeddings
+            e armazená-los em um banco vetorial, permitindo que modelos de linguagem consultem essas informações para responder
+            perguntas de forma mais contextualizada. O sistema utiliza <strong>LangChain</strong> para orquestração,
+            <strong>Ollama</strong> para geração de embeddings e execução do LLM, e <strong>Milvus</strong> como banco de dados vetorial.
+            Também foram exploradas técnicas avançadas de recuperação de contexto, como <strong>HyDE</strong>, para melhorar a busca semântica.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="secao">
+      <div class="container">
+        <h2 class="secao__titulo">Conceitos Fundamentais Praticados</h2>
+
+        <div class="card">
+          <div class="conceitos-grid">
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Carregamento e processamento de documentos com DirectoryLoader</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Divisão de documentos em chunks com CharacterTextSplitter</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Geração de embeddings semânticos para representar textos</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Armazenamento e busca vetorial utilizando Milvus</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Uso de modelos de linguagem locais com Ollama</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Construção de pipelines com LangChain</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Implementação de técnicas avançadas de recuperação, como HyDE</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Estruturação de prompts e chains para geração de respostas</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Integração entre LLM, embeddings e banco vetorial para sistemas RAG</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="secao">
+      <div class="container">
+        <h2 class="secao__titulo">Código Fonte</h2>
+
+        <div class="codigo-container">
+          <button class="codigo-toggle" onclick="toggleCodigo(this)">
+            <span>final.ipynb</span>
+            <span class="tag-lang">Jupyter Notebook</span>
+            <span class="seta">▼</span>
+          </button>
+          <div class="codigo-bloco">
+            <div class="codigo-header">
+              <div class="dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <span class="nome-arquivo">final.ipynb</span>
+              <button class="btn-copiar" onclick="copiarCodigo(this)">
+                <i class="fa-regular fa-copy"></i> Copiar
+              </button>
+            </div>
+            <pre class="codigo-pre"><code><span class="kw">from</span> langchain_community.document_loaders <span class="kw">import</span> DirectoryLoader
+<span class="kw">from</span> langchain_text_splitters <span class="kw">import</span> CharacterTextSplitter
+<span class="kw">from</span> langchain_ollama <span class="kw">import</span> OllamaEmbeddings, ChatOllama
+<span class="kw">from</span> langchain_milvus <span class="kw">import</span> Milvus
+<span class="kw">from</span> langchain.chains <span class="kw">import</span> RetrievalQA
+
+<span class="cmt"># Carregamento dos documentos</span>
+loader = <span class="fn">DirectoryLoader</span>(<span class="str">"./docs"</span>, glob=<span class="str">"**/*.pdf"</span>)
+documentos = loader.<span class="fn">load</span>()
+
+<span class="cmt"># Divisão em chunks</span>
+splitter = <span class="fn">CharacterTextSplitter</span>(chunk_size=<span class="num">1000</span>, chunk_overlap=<span class="num">200</span>)
+chunks = splitter.<span class="fn">split_documents</span>(documentos)
+
+<span class="cmt"># Embeddings e banco vetorial</span>
+embeddings = <span class="fn">OllamaEmbeddings</span>(model=<span class="str">"nomic-embed-text"</span>)
+vectorstore = <span class="fn">Milvus</span>.from_documents(
+    documents=chunks,
+    embedding=embeddings,
+    connection_args={<span class="str">"uri"</span>: <span class="str">"http://localhost:19530"</span>}
+)
+
+<span class="cmt"># Retriever</span>
+retriever = vectorstore.<span class="fn">as_retriever</span>()
+
+<span class="cmt"># LLM</span>
+llm = <span class="fn">ChatOllama</span>(model=<span class="str">"llama3"</span>)
+
+<span class="cmt"># Pipeline RAG</span>
+qa_chain = <span class="fn">RetrievalQA</span>.from_chain_type(
+    llm=llm,
+    retriever=retriever,
+    return_source_documents=<span class="kw">True</span>
+)
+
+pergunta = <span class="str">"Quais são os principais conceitos explicados nos documentos?"</span>
+resposta = qa_chain(<span class="str">{"query": pergunta}</span>)
+
+<span class="fn">print</span>(resposta[<span class="str">"result"</span>])</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="secao">
+      <div class="container">
+        <div class="card">
+          <div class="autor">
+            <img src="https://avatars.githubusercontent.com/u/237313711?v=4" alt="Stella Leoni" class="autor__avatar">
+            <div>
+              <p class="autor__nome">Stella Leoni</p>
+              <p class="autor__data">25/03/2026</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape" id="rodape">
+    <div class="container rodape__conteudo">
+      <p class="rodape__copyright">
+        © 2026 Stella Bueno Leoni ·
+        <a href="index.html" style="color: var(--secondary); text-decoration: none;">Voltar ao Portfólio</a>
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    function toggleCodigo(btn) {
+      const bloco = btn.nextElementSibling;
+      btn.classList.toggle('aberto');
+      bloco.classList.toggle('visivel');
+    }
+
+    function copiarCodigo(btn) {
+      const pre = btn.closest('.codigo-bloco').querySelector('.codigo-pre code');
+      const texto = pre.textContent;
+      navigator.clipboard.writeText(texto).then(() => {
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Copiado!';
+        btn.classList.add('copiado');
+        setTimeout(() => {
+          btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copiar';
+          btn.classList.remove('copiado');
+        }, 2000);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const cards = document.querySelectorAll(".card");
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) entry.target.classList.add("mostrar");
+          });
+        },
+        { threshold: 0.15 }
+      );
+      cards.forEach((card) => {
+        card.classList.add("esconder");
+        observer.observe(card);
+      });
+    });
+  </script>
+</body>
+
+</html>

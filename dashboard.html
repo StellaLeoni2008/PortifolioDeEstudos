@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard de Análise de Salários na Área de Dados - Código | Stella Bueno Leoni</title>
+    <meta name="description"
+        content="Documentação e código fonte do projeto Dashboard de Análise de Salários na Área de Dados - Stella Bueno Leoni." />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* === Estilos do bloco de código === */
+        .codigo-container {
+            margin-top: 1rem;
+        }
+
+        .codigo-toggle {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.85rem 1.1rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            color: var(--text);
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        .codigo-toggle:hover {
+            background: rgba(124, 92, 255, 0.1);
+            border-color: rgba(124, 92, 255, 0.3);
+        }
+
+        .codigo-toggle .tag-lang {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-soft);
+            letter-spacing: 0.5px;
+        }
+
+        .codigo-toggle .seta {
+            transition: transform 0.3s ease;
+            color: var(--text-soft);
+        }
+
+        .codigo-toggle.aberto .seta {
+            transform: rotate(180deg);
+        }
+
+        .codigo-bloco {
+            display: none;
+            margin-top: 0.5rem;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+        }
+
+        .codigo-bloco.visivel {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .codigo-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.04);
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .codigo-header .dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .codigo-header .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .dot.red {
+            background: rgba(255, 95, 87, 0.6);
+        }
+
+        .dot.yellow {
+            background: rgba(142, 247, 200, 0.4);
+        }
+
+        .dot.green {
+            background: rgba(124, 92, 255, 0.4);
+        }
+
+        .codigo-header .nome-arquivo {
+            font-size: 0.8rem;
+            color: var(--text-soft);
+            font-family: 'Consolas', monospace;
+        }
+
+        .btn-copiar {
+            background: none;
+            border: none;
+            color: var(--text-soft);
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            transition: 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-copiar:hover {
+            color: var(--highlight);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .btn-copiar.copiado {
+            color: var(--highlight);
+        }
+
+        .codigo-pre {
+            background: rgba(6, 8, 18, 0.8);
+            padding: 1.2rem;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.65;
+            color: var(--text-soft);
+            margin: 0;
+        }
+
+        /* Syntax highlighting */
+        .kw {
+            color: #7c9cff;
+        }
+
+        .str {
+            color: #8ef7c8;
+        }
+
+        .fn {
+            color: #ffd580;
+        }
+
+        .cmt {
+            color: #5a6580;
+        }
+
+        .num {
+            color: #f78c9c;
+        }
+
+        .tag {
+            color: #7c9cff;
+        }
+
+        .attr {
+            color: #ffd580;
+        }
+
+        .prop {
+            color: #ffd580;
+        }
+
+        .val {
+            color: #8ef7c8;
+        }
+
+        .conceitos-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.6rem;
+        }
+        .botao-link-anotacoes {
+            margin-left: 10rem;
+            margin-top: 0.5rem;
+        }
+
+        @media (min-width: 700px) {
+            .conceitos-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .conceito-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            color: var(--text-soft);
+            font-size: 0.95rem;
+        }
+
+        .conceito-item i {
+            color: var(--secondary);
+            margin-top: 3px;
+            flex-shrink: 0;
+        }
+
+        .autor {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .autor__avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: 2px solid rgba(124, 92, 255, 0.3);
+        }
+
+        .autor__nome {
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.15rem;
+        }
+
+        .autor__data {
+            font-size: 0.9rem;
+            color: var(--text-soft);
+        }
+
+        .tech-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tech-badge {
+            font-size: 0.82rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+            background: rgba(124, 92, 255, 0.12);
+            color: var(--secondary);
+            border: 1px solid rgba(124, 92, 255, 0.2);
+            font-weight: 600;
+        }
+        .botao-link-anotacoes {
+            display: inline-block;
+            margin-top: 0.2rem;
+            margin-left: 1rem;
+            padding: 0.85rem 5rem;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #ffffff;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            font-weight: 700;
+            transition: 0.25s ease;
+        }
+
+        .botao-link-anotacoes:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="cabecalho" id="inicio">
+        <div class="container">
+            <p class="cabecalho__tag">Stella Bueno Leoni</p>
+            <h1 class="cabecalho__titulo">Dashboard de Análise de Salários na Área de Dados</h1>
+            <p class="cabecalho__texto">Documentação e código fonte do projeto Dashboard de Análise de Salários.</p>
+            <nav class="menu">
+                <a href="index.html">← Voltar ao Portfólio</a>
+                <a href="https://github.com/StellaLeoni2008/imersao-dados-python" target="_blank">
+                    <i class="fa-brands fa-github"></i> Repositório
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="secao">
+            <div class="container">
+                <h2 class="secao__titulo">Sobre o Projeto</h2>
+
+                <div class="tech-badges">
+                    <span class="tech-badge">Python</span>
+                    <span class="tech-badge">Pandas</span>
+                    <span class="tech-badge">Streamlit</span>
+                    <span class="tech-badge">Plotly</span>
+                </div>
+
+                <div class="card">
+                    <p>
+                        O <em>Dashboard de Análise de Salários na Área de Dados</em> foi desenvolvido durante o curso
+                        <strong>Alura – Imersão Dados com Python</strong>. O projeto foi criado para explorar dados
+                        salariais
+                        da área de dados, aplicando conceitos de análise de dados com Python e construção de dashboards
+                        interativos.
+                    </p>
+                    <br>
+                    <p>
+                        A aplicação foi iniciada no Google Colab para exploração e tratamento inicial dos dados e depois
+                        evoluiu para
+                        uma interface interativa com <strong>Streamlit</strong>. No dashboard, o usuário pode filtrar
+                        informações por
+                        ano, senioridade, tipo de contrato e tamanho da empresa, acompanhando automaticamente métricas e
+                        gráficos.
+                    </p>
+                </div>
+            </div>
+        </section>
+        <!-- Vídeo do Projeto -->
+        <section class="secao">
+            <div class="container">
+                <h2 class="secao__titulo">Demonstração do Projeto</h2>
+
+                <div class="card" style="padding: 0; overflow: hidden;">
+                    <div style="position: relative; padding-bottom: 56.25%; height: 0;">
+                        <iframe src="/assets/video.mp4" title="Demonstração do Projeto" frameborder="0" allowfullscreen
+                            style="position: absolute; top:0; left:0; width:100%; height:100%;">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="secao">
+            <div class="container">
+                <h2 class="secao__titulo">Conceitos Fundamentais Praticados</h2>
+
+                <div class="card">
+                    <div class="conceitos-grid">
+                        <div class="conceito-item">
+                            <i class="fa-solid fa-code"></i>
+                            <span>Fundamentos da linguagem Python para estruturação da aplicação</span>
+                        </div>
+                        <div class="conceito-item">
+                            <i class="fa-solid fa-code"></i>
+                            <span>Leitura e manipulação de dados com Pandas</span>
+                        </div>
+                        <div class="conceito-item">
+                            <i class="fa-solid fa-code"></i>
+                            <span>Filtragem de DataFrame com múltiplas condições</span>
+                        </div>
+                        <div class="conceito-item">
+                            <i class="fa-solid fa-code"></i>
+                            <span>Tratamento e análise exploratória de dados</span>
+                        </div>
+                        <div class="conceito-item">
+                            <i class="fa-solid fa-code"></i>
+                            <span>Cálculo de métricas estatísticas como média, máximo, moda e contagem</span>
+                        </div>
+                        <div class="conceito-item">
+                            <i class="fa-solid fa-code"></i>
+                            <span>Agrupamento e agregação de dados para análises salariais</span>
+                        </div>
+                        <div class="conceito-item">
+                            <i class="fa-solid fa-code"></i>
+                            <span>Criação de gráficos interativos com Plotly</span>
+                        </div>
+                        <div class="conceito-item">
+                            <i class="fa-solid fa-code"></i>
+                            <span>Construção de dashboard com interface dinâmica utilizando Streamlit</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="secao">
+            <div class="container">
+                <h2 class="secao__titulo">Código Fonte</h2>
+
+                <div class="codigo-container">
+                    <button class="codigo-toggle" onclick="toggleCodigo(this)">
+                        <span>imersão/app.py</span>
+                        <span class="tag-lang">Python</span>
+                        <span class="seta">▼</span>
+                    </button>
+                    <div class="codigo-bloco">
+                        <div class="codigo-header">
+                            <div class="dots">
+                                <span class="dot red"></span>
+                                <span class="dot yellow"></span>
+                                <span class="dot green"></span>
+                            </div>
+                            <span class="nome-arquivo">imersão/app.py</span>
+                            <button class="btn-copiar" onclick="copiarCodigo(this)">
+                                <i class="fa-regular fa-copy"></i> Copiar
+                            </button>
+                        </div>
+                        <pre class="codigo-pre"><code><span class="kw">import</span> streamlit <span class="kw">as</span> st
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> plotly.express <span class="kw">as</span> px
+
+<span class="cmt"># --- Configuração da Página ---</span>
+st.<span class="fn">set_page_config</span>(
+    page_title=<span class="str">"Dashboard de Salários na Área de Dados"</span>,
+    page_icon=<span class="str">""</span>,
+    layout=<span class="str">"wide"</span>,
+)
+
+<span class="cmt"># --- Carregamento dos dados ---</span>
+df = pd.<span class="fn">read_csv</span>(<span class="str">"https://raw.githubusercontent.com/vqrca/dashboard_salarios_dados/refs/heads/main/dados-imersao-final.csv"</span>)
+
+<span class="cmt"># --- Barra Lateral (Filtros) ---</span>
+st.sidebar.<span class="fn">header</span>(<span class="str">" Filtros"</span>)
+
+anos_disponiveis = <span class="fn">sorted</span>(df[<span class="str">'ano'</span>].<span class="fn">unique</span>())
+anos_selecionados = st.sidebar.<span class="fn">multiselect</span>(<span class="str">"Ano"</span>, anos_disponiveis, default=anos_disponiveis)
+
+senioridades_disponiveis = <span class="fn">sorted</span>(df[<span class="str">'senioridade'</span>].<span class="fn">unique</span>())
+senioridades_selecionadas = st.sidebar.<span class="fn">multiselect</span>(<span class="str">"Senioridade"</span>, senioridades_disponiveis, default=senioridades_disponiveis)
+
+contratos_disponiveis = <span class="fn">sorted</span>(df[<span class="str">'contrato'</span>].<span class="fn">unique</span>())
+contratos_selecionados = st.sidebar.<span class="fn">multiselect</span>(<span class="str">"Tipo de Contrato"</span>, contratos_disponiveis, default=contratos_disponiveis)
+
+tamanhos_disponiveis = <span class="fn">sorted</span>(df[<span class="str">'tamanho_empresa'</span>].<span class="fn">unique</span>())
+tamanhos_selecionados = st.sidebar.<span class="fn">multiselect</span>(<span class="str">"Tamanho da Empresa"</span>, tamanhos_disponiveis, default=tamanhos_disponiveis)
+
+<span class="cmt"># --- Filtragem do DataFrame ---</span>
+df_filtrado = df[
+    (df[<span class="str">'ano'</span>].<span class="fn">isin</span>(anos_selecionados)) &
+    (df[<span class="str">'senioridade'</span>].<span class="fn">isin</span>(senioridades_selecionadas)) &
+    (df[<span class="str">'contrato'</span>].<span class="fn">isin</span>(contratos_selecionados)) &
+    (df[<span class="str">'tamanho_empresa'</span>].<span class="fn">isin</span>(tamanhos_selecionados))
+]
+
+<span class="cmt"># --- Conteúdo Principal ---</span>
+st.<span class="fn">title</span>(<span class="str">" Dashboard de Análise de Salários na Área de Dados"</span>)
+st.<span class="fn">markdown</span>(<span class="str">"Explore os dados salariais na área de dados nos últimos anos. Utilize os filtros à esquerda para refinar sua análise."</span>)
+
+st.<span class="fn">subheader</span>(<span class="str">"Métricas gerais (Salário anual em USD)"</span>)
+
+<span class="kw">if</span> <span class="kw">not</span> df_filtrado.empty:
+    salario_medio = df_filtrado[<span class="str">'usd'</span>].<span class="fn">mean</span>()
+    salario_maximo = df_filtrado[<span class="str">'usd'</span>].<span class="fn">max</span>()
+    total_registros = df_filtrado.shape[<span class="num">0</span>]
+    cargo_mais_frequente = df_filtrado[<span class="str">"cargo"</span>].<span class="fn">mode</span>()[<span class="num">0</span>]
+<span class="kw">else</span>:
+    salario_medio, salario_mediano, salario_maximo, total_registros, cargo_mais_comum = <span class="num">0</span>, <span class="num">0</span>, <span class="num">0</span>, <span class="str">""</span>
+
+col1, col2, col3, col4 = st.<span class="fn">columns</span>(<span class="num">4</span>)
+col1.<span class="fn">metric</span>(<span class="str">"Salário médio"</span>, <span class="str">f"${salario_medio:,.0f}"</span>)
+col2.<span class="fn">metric</span>(<span class="str">"Salário máximo"</span>, <span class="str">f"${salario_maximo:,.0f}"</span>)
+col3.<span class="fn">metric</span>(<span class="str">"Total de registros"</span>, <span class="str">f"{total_registros:,}"</span>)
+col4.<span class="fn">metric</span>(<span class="str">"Cargo mais frequente"</span>, cargo_mais_frequente)
+
+st.<span class="fn">markdown</span>(<span class="str">"---"</span>)
+st.<span class="fn">subheader</span>(<span class="str">"Gráficos"</span>)
+
+col_graf1, col_graf2 = st.<span class="fn">columns</span>(<span class="num">2</span>)
+
+<span class="kw">with</span> col_graf1:
+    <span class="kw">if</span> <span class="kw">not</span> df_filtrado.empty:
+        top_cargos = df_filtrado.<span class="fn">groupby</span>(<span class="str">'cargo'</span>)[<span class="str">'usd'</span>].<span class="fn">mean</span>().<span class="fn">nlargest</span>(<span class="num">10</span>).<span class="fn">sort_values</span>(ascending=<span class="kw">True</span>).<span class="fn">reset_index</span>()
+        grafico_cargos = px.<span class="fn">bar</span>(
+            top_cargos,
+            x=<span class="str">'usd'</span>,
+            y=<span class="str">'cargo'</span>,
+            orientation=<span class="str">'h'</span>,
+            title=<span class="str">"Top 10 cargos por salário médio"</span>,
+            labels={<span class="str">'usd'</span>: <span class="str">'Média salarial anual (USD)'</span>, <span class="str">'cargo'</span>: <span class="str">''</span>}
+        )
+        grafico_cargos.<span class="fn">update_layout</span>(title_x=<span class="num">0.1</span>, yaxis={<span class="str">'categoryorder'</span>: <span class="str">'total ascending'</span>})
+        st.<span class="fn">plotly_chart</span>(grafico_cargos, use_container_width=<span class="kw">True</span>)
+    <span class="kw">else</span>:
+        st.<span class="fn">warning</span>(<span class="str">"Nenhum dado para exibir no gráfico de cargos."</span>)
+
+<span class="kw">with</span> col_graf2:
+    <span class="kw">if</span> <span class="kw">not</span> df_filtrado.empty:
+        grafico_hist = px.<span class="fn">histogram</span>(
+            df_filtrado,
+            x=<span class="str">'usd'</span>,
+            nbins=<span class="num">30</span>,
+            title=<span class="str">"Distribuição de salários anuais"</span>,
+            labels={<span class="str">'usd'</span>: <span class="str">'Faixa salarial (USD)'</span>, <span class="str">'count'</span>: <span class="str">''</span>}
+        )
+        grafico_hist.<span class="fn">update_layout</span>(title_x=<span class="num">0.1</span>)
+        st.<span class="fn">plotly_chart</span>(grafico_hist, use_container_width=<span class="kw">True</span>)
+    <span class="kw">else</span>:
+        st.<span class="fn">warning</span>(<span class="str">"Nenhum dado para exibir no gráfico de distribuição."</span>)
+
+col_graf3, col_graf4 = st.<span class="fn">columns</span>(<span class="num">2</span>)
+
+<span class="kw">with</span> col_graf3:
+    <span class="kw">if</span> <span class="kw">not</span> df_filtrado.empty:
+        remoto_contagem = df_filtrado[<span class="str">'remoto'</span>].<span class="fn">value_counts</span>().<span class="fn">reset_index</span>()
+        remoto_contagem.columns = [<span class="str">'tipo_trabalho'</span>, <span class="str">'quantidade'</span>]
+        grafico_remoto = px.<span class="fn">pie</span>(
+            remoto_contagem,
+            names=<span class="str">'tipo_trabalho'</span>,
+            values=<span class="str">'quantidade'</span>,
+            title=<span class="str">'Proporção dos tipos de trabalho'</span>,
+            hole=<span class="num">0.5</span>
+        )
+        grafico_remoto.<span class="fn">update_traces</span>(textinfo=<span class="str">'percent+label'</span>)
+        grafico_remoto.<span class="fn">update_layout</span>(title_x=<span class="num">0.1</span>)
+        st.<span class="fn">plotly_chart</span>(grafico_remoto, use_container_width=<span class="kw">True</span>)
+    <span class="kw">else</span>:
+        st.<span class="fn">warning</span>(<span class="str">"Nenhum dado para exibir no gráfico dos tipos de trabalho."</span>)
+
+<span class="kw">with</span> col_graf4:
+    <span class="kw">if</span> <span class="kw">not</span> df_filtrado.empty:
+        df_ds = df_filtrado[df_filtrado[<span class="str">'cargo'</span>] == <span class="str">'Data Scientist'</span>]
+        media_ds_pais = df_ds.<span class="fn">groupby</span>(<span class="str">'residencia_iso3'</span>)[<span class="str">'usd'</span>].<span class="fn">mean</span>().<span class="fn">reset_index</span>()
+        grafico_paises = px.<span class="fn">choropleth</span>(
+            media_ds_pais,
+            locations=<span class="str">'residencia_iso3'</span>,
+            color=<span class="str">'usd'</span>,
+            color_continuous_scale=<span class="str">'rdylgn'</span>,
+            title=<span class="str">'Salário médio de Cientista de Dados por país'</span>,
+            labels={<span class="str">'usd'</span>: <span class="str">'Salário médio (USD)'</span>, <span class="str">'residencia_iso3'</span>: <span class="str">'País'</span>}
+        )
+        grafico_paises.<span class="fn">update_layout</span>(title_x=<span class="num">0.1</span>)
+        st.<span class="fn">plotly_chart</span>(grafico_paises, use_container_width=<span class="kw">True</span>)
+    <span class="kw">else</span>:
+        st.<span class="fn">warning</span>(<span class="str">"Nenhum dado para exibir no gráfico de países."</span>)
+
+st.<span class="fn">subheader</span>(<span class="str">"Dados Detalhados"</span>)
+st.<span class="fn">dataframe</span>(df_filtrado)</code></pre>
+                    </div>
+                </div>
+
+                <div class="codigo-container">
+                    <button class="codigo-toggle" onclick="toggleCodigo(this)">
+                        <span>imersão/requirements.txt</span>
+                        <span class="tag-lang">TXT</span>
+                        <span class="seta">▼</span>
+                    </button>
+                    <div class="codigo-bloco">
+                        <div class="codigo-header">
+                            <div class="dots">
+                                <span class="dot red"></span>
+                                <span class="dot yellow"></span>
+                                <span class="dot green"></span>
+                            </div>
+                            <span class="nome-arquivo">imersão/requirements.txt</span>
+                            <button class="btn-copiar" onclick="copiarCodigo(this)">
+                                <i class="fa-regular fa-copy"></i> Copiar
+                            </button>
+                        </div>
+                        <pre class="codigo-pre"><code>pandas==2.2.3
+streamlit==1.44.1
+plotly==5.24.1</code></pre>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+         <section class="secao">
+            <div class="container">
+                <h2 class="secao__titulo">Anotacões da Imersão</h2>
+        <a class="botao-link-anotacoes"
+          href="https://docs.google.com/document/d/1WE8HClei7Wm9s3mnbdv24ZKxH42bOSFlO83I2mH3SW0/edit?usp=sharing">
+          Ver anotações
+        </a>
+
+        <section class="secao">
+            <div class="container">
+                <div class="card">
+                    <div class="autor">
+                        <img src="https://avatars.githubusercontent.com/u/237313711?v=4" alt="Stella Leoni"
+                            class="autor__avatar">
+                        <div>
+                            <p class="autor__nome">Stella Leoni</p>
+                            <p class="autor__data">30/01/2026</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="rodape" id="rodape">
+        <div class="container rodape__conteudo">
+            <p class="rodape__copyright">
+                © 2026 Stella Bueno Leoni ·
+                <a href="index.html" style="color: var(--secondary); text-decoration: none;">Voltar ao Portfólio</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleCodigo(btn) {
+            const bloco = btn.nextElementSibling;
+            btn.classList.toggle('aberto');
+            bloco.classList.toggle('visivel');
+        }
+
+        function copiarCodigo(btn) {
+            const pre = btn.closest('.codigo-bloco').querySelector('.codigo-pre code');
+            const texto = pre.textContent;
+            navigator.clipboard.writeText(texto).then(() => {
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Copiado!';
+                btn.classList.add('copiado');
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copiar';
+                    btn.classList.remove('copiado');
+                }, 2000);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const cards = document.querySelectorAll(".card");
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) entry.target.classList.add("mostrar");
+                    });
+                },
+                { threshold: 0.15 }
+            );
+            cards.forEach((card) => {
+                card.classList.add("esconder");
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+
+</html>

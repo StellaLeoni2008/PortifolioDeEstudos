@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sorteador de Números - Código | Stella Bueno Leoni</title>
+  <meta name="description"
+    content="Documentação e código fonte do projeto Sorteador de Números - Stella Bueno Leoni." />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    .codigo-container {
+      margin-top: 1rem;
+    }
+
+    .codigo-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1.1rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: 0.25s ease;
+    }
+
+    .codigo-toggle:hover {
+      background: rgba(124, 92, 255, 0.1);
+      border-color: rgba(124, 92, 255, 0.3);
+    }
+
+    .codigo-toggle .tag-lang {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      letter-spacing: 0.5px;
+    }
+
+    .codigo-toggle .seta {
+      transition: transform 0.3s ease;
+      color: var(--text-soft);
+    }
+
+    .codigo-toggle.aberto .seta {
+      transform: rotate(180deg);
+    }
+
+    .codigo-bloco {
+      display: none;
+      margin-top: 0.5rem;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+    }
+
+    .codigo-bloco.visivel {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .codigo-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 1rem;
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .codigo-header .dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .codigo-header .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot.red {
+      background: rgba(255, 95, 87, 0.6);
+    }
+
+    .dot.yellow {
+      background: rgba(142, 247, 200, 0.4);
+    }
+
+    .dot.green {
+      background: rgba(124, 92, 255, 0.4);
+    }
+
+    .codigo-header .nome-arquivo {
+      font-size: 0.8rem;
+      color: var(--text-soft);
+      font-family: 'Consolas', monospace;
+    }
+
+    .btn-copiar {
+      background: none;
+      border: none;
+      color: var(--text-soft);
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      transition: 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-copiar:hover {
+      color: var(--highlight);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .btn-copiar.copiado {
+      color: var(--highlight);
+    }
+
+    .codigo-pre {
+      background: rgba(6, 8, 18, 0.8);
+      padding: 1.2rem;
+      overflow-x: auto;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 0.85rem;
+      line-height: 1.65;
+      color: var(--text-soft);
+      margin: 0;
+    }
+
+    .kw {
+      color: #7c9cff;
+    }
+
+    .str {
+      color: #8ef7c8;
+    }
+
+    .fn {
+      color: #ffd580;
+    }
+
+    .cmt {
+      color: #5a6580;
+    }
+
+    .num {
+      color: #f78c9c;
+    }
+
+    .tag {
+      color: #7c9cff;
+    }
+
+    .attr {
+      color: #ffd580;
+    }
+
+    .prop {
+      color: #ffd580;
+    }
+
+    .val {
+      color: #8ef7c8;
+    }
+
+    .conceitos-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.6rem;
+    }
+
+    @media (min-width: 700px) {
+      .conceitos-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .conceito-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      color: var(--text-soft);
+      font-size: 0.95rem;
+    }
+
+    .conceito-item i {
+      color: var(--secondary);
+      margin-top: 3px;
+      flex-shrink: 0;
+    }
+
+    .autor {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .autor__avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 2px solid rgba(124, 92, 255, 0.3);
+    }
+
+    .autor__nome {
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.15rem;
+    }
+
+    .autor__data {
+      font-size: 0.9rem;
+      color: var(--text-soft);
+    }
+
+    .tech-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .tech-badge {
+      font-size: 0.82rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(124, 92, 255, 0.12);
+      color: var(--secondary);
+      border: 1px solid rgba(124, 92, 255, 0.2);
+      font-weight: 600;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="cabecalho" id="inicio">
+    <div class="container">
+      <p class="cabecalho__tag">Stella Bueno Leoni</p>
+      <h1 class="cabecalho__titulo">Sorteador de Números</h1>
+      <p class="cabecalho__texto">
+        Documentação e código fonte do projeto Sorteador de Números.
+      </p>
+      <nav class="menu">
+        <a href="index.html">← Voltar ao Portfólio</a>
+        <a href="https://github.com/StellaLeoni2008/sorteador-de-numeros" target="_blank">
+          <i class="fa-brands fa-github"></i> Repositório
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="secao">
+      <div class="container">
+        <h2 class="secao__titulo">Sobre o Projeto</h2>
+
+        <div class="tech-badges">
+          <span class="tech-badge">HTML</span>
+          <span class="tech-badge">CSS</span>
+          <span class="tech-badge">JavaScript</span>
+        </div>
+
+        <div class="card">
+          <p>
+            O <em>Sorteador de Números</em> foi desenvolvido como parte das atividades propostas no curso
+            <strong>Alura – Lógica de Programação: praticando com desafios</strong>. O foco principal foi a prática de
+            lógica de programação com JavaScript, desenvolvendo funcionalidades dinâmicas sem aprofundamento em HTML e CSS. :contentReference[oaicite:1]{index=1}
+          </p>
+          <br>
+          <p>
+            Neste projeto, o usuário informa um intervalo e a quantidade desejada de números para sorteio, e a aplicação
+            realiza o processo sem repetição, validando os dados e atualizando a interface de forma dinâmica. O projeto
+            fortaleceu a base em JavaScript e ajudou a consolidar conceitos fundamentais de lógica e interação com o DOM. :contentReference[oaicite:2]{index=2}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="secao">
+      <div class="container">
+        <h2 class="secao__titulo">Conceitos Fundamentais Praticados</h2>
+
+        <div class="card">
+          <div class="conceitos-grid">
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Estruturação e organização de variáveis</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Conversão e validação de dados de entrada</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Uso de condicionais para controle de fluxo</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Estruturas de repetição</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Manipulação de arrays</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Criação e organização de funções</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Geração de números aleatórios</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Manipulação do DOM para atualização dinâmica da interface</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Separação de responsabilidades no código</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="secao">
+      <div class="container">
+        <h2 class="secao__titulo">Código Fonte</h2>
+
+        <div class="codigo-container">
+          <button class="codigo-toggle" onclick="toggleCodigo(this)">
+            <span>app.js</span>
+            <span class="tag-lang">JavaScript</span>
+            <span class="seta">▼</span>
+          </button>
+          <div class="codigo-bloco">
+            <div class="codigo-header">
+              <div class="dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <span class="nome-arquivo">app.js</span>
+              <button class="btn-copiar" onclick="copiarCodigo(this)">
+                <i class="fa-regular fa-copy"></i> Copiar
+              </button>
+            </div>
+            <pre class="codigo-pre"><code><span class="kw">function</span> <span class="fn">sortear</span>() {
+  <span class="kw">let</span> quantidade = <span class="fn">parseInt</span>(<span class="kw">document</span>.<span class="fn">getElementById</span>(<span class="str">'quantidade'</span>).value);
+  <span class="kw">let</span> de = <span class="fn">parseInt</span>(<span class="kw">document</span>.<span class="fn">getElementById</span>(<span class="str">'de'</span>).value);
+  <span class="kw">let</span> ate = <span class="fn">parseInt</span>(<span class="kw">document</span>.<span class="fn">getElementById</span>(<span class="str">'ate'</span>).value);
+
+  <span class="kw">if</span> (de >= ate) {
+    <span class="fn">alert</span>(<span class="str">'O campo \"Do número\" deve ser menor que o campo \"Até o número\".'</span>);
+    <span class="kw">return</span>;
+  }
+
+  <span class="kw">let</span> numerosSorteados = [];
+  <span class="kw">let</span> numero;
+
+  <span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i < quantidade; i++) {
+    numero = <span class="fn">obterNumeroAleatorio</span>(de, ate);
+
+    <span class="kw">while</span> (numerosSorteados.<span class="fn">includes</span>(numero)) {
+      numero = <span class="fn">obterNumeroAleatorio</span>(de, ate);
+    }
+
+    numerosSorteados.<span class="fn">push</span>(numero);
+  }
+
+  <span class="kw">let</span> resultado = <span class="kw">document</span>.<span class="fn">getElementById</span>(<span class="str">'resultado'</span>);
+  resultado.innerHTML = <span class="str">`<label class=\"texto__paragrafo\">Números sorteados: ${numerosSorteados}</label>`</span>;
+
+  <span class="fn">alterarStatusBotao</span>();
+}
+
+<span class="kw">function</span> <span class="fn">obterNumeroAleatorio</span>(min, max) {
+  <span class="kw">return</span> <span class="fn">parseInt</span>(<span class="kw">Math</span>.<span class="fn">random</span>() * (max - min + <span class="num">1</span>) + min);
+}
+
+<span class="kw">function</span> <span class="fn">alterarStatusBotao</span>() {
+  <span class="kw">let</span> botao = <span class="kw">document</span>.<span class="fn">getElementById</span>(<span class="str">'btn-reiniciar'</span>);
+  <span class="kw">if</span> (botao.classList.<span class="fn">contains</span>(<span class="str">'container__botao-desabilitado'</span>)) {
+    botao.classList.<span class="fn">remove</span>(<span class="str">'container__botao-desabilitado'</span>);
+    botao.classList.<span class="fn">add</span>(<span class="str">'container__botao'</span>);
+  } <span class="kw">else</span> {
+    botao.classList.<span class="fn">remove</span>(<span class="str">'container__botao'</span>);
+    botao.classList.<span class="fn">add</span>(<span class="str">'container__botao-desabilitado'</span>);
+  }
+}
+
+<span class="kw">function</span> <span class="fn">reiniciar</span>() {
+  <span class="kw">document</span>.<span class="fn">getElementById</span>(<span class="str">'quantidade'</span>).value = <span class="str">''</span>;
+  <span class="kw">document</span>.<span class="fn">getElementById</span>(<span class="str">'de'</span>).value = <span class="str">''</span>;
+  <span class="kw">document</span>.<span class="fn">getElementById</span>(<span class="str">'ate'</span>).value = <span class="str">''</span>;
+  <span class="kw">document</span>.<span class="fn">getElementById</span>(<span class="str">'resultado'</span>).innerHTML = <span class="str">'<label class=\"texto__paragrafo\">Números sorteados: nenhum até agora</label>'</span>;
+  <span class="fn">alterarStatusBotao</span>();
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="codigo-container">
+          <button class="codigo-toggle" onclick="toggleCodigo(this)">
+            <span>index.html</span>
+            <span class="tag-lang">HTML</span>
+            <span class="seta">▼</span>
+          </button>
+          <div class="codigo-bloco">
+            <div class="codigo-header">
+              <div class="dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <span class="nome-arquivo">index.html</span>
+              <button class="btn-copiar" onclick="copiarCodigo(this)">
+                <i class="fa-regular fa-copy"></i> Copiar
+              </button>
+            </div>
+            <pre class="codigo-pre"><code><span class="tag">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;html</span> <span class="attr">lang</span>=<span class="str">"pt-br"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+  <span class="tag">&lt;meta</span> <span class="attr">charset</span>=<span class="str">"UTF-8"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;meta</span> <span class="attr">name</span>=<span class="str">"viewport"</span> <span class="attr">content</span>=<span class="str">"width=device-width, initial-scale=1.0"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;title&gt;</span>Sorteador de números<span class="tag">&lt;/title&gt;</span>
+  <span class="tag">&lt;link</span> <span class="attr">rel</span>=<span class="str">"stylesheet"</span> <span class="attr">href</span>=<span class="str">"style.css"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+  <span class="tag">&lt;main</span> <span class="attr">class</span>=<span class="str">"container"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"container__conteudo"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>Sorteador de números<span class="tag">&lt;/h1&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"container__campo"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;label&gt;</span>Quantidade de números<span class="tag">&lt;/label&gt;</span>
+        <span class="tag">&lt;input</span> <span class="attr">id</span>=<span class="str">"quantidade"</span> <span class="attr">type</span>=<span class="str">"number"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"container__campo"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;label&gt;</span>Do número<span class="tag">&lt;/label&gt;</span>
+        <span class="tag">&lt;input</span> <span class="attr">id</span>=<span class="str">"de"</span> <span class="attr">type</span>=<span class="str">"number"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"container__campo"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;label&gt;</span>Até o número<span class="tag">&lt;/label&gt;</span>
+        <span class="tag">&lt;input</span> <span class="attr">id</span>=<span class="str">"ate"</span> <span class="attr">type</span>=<span class="str">"number"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">id</span>=<span class="str">"resultado"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;label</span> <span class="attr">class</span>=<span class="str">"texto__paragrafo"</span><span class="tag">&gt;</span>Números sorteados: nenhum até agora<span class="tag">&lt;/label&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"container__botoes"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="str">"container__botao"</span> <span class="attr">onclick</span>=<span class="str">"sortear()"</span><span class="tag">&gt;</span>Sortear<span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;button</span> <span class="attr">id</span>=<span class="str">"btn-reiniciar"</span> <span class="attr">class</span>=<span class="str">"container__botao-desabilitado"</span> <span class="attr">onclick</span>=<span class="str">"reiniciar()"</span><span class="tag">&gt;</span>Reiniciar<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;/main&gt;</span>
+  <span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="str">"app.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+<span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></code></pre>
+          </div>
+        </div>
+
+        <div class="codigo-container">
+          <button class="codigo-toggle" onclick="toggleCodigo(this)">
+            <span>style.css</span>
+            <span class="tag-lang">CSS</span>
+            <span class="seta">▼</span>
+          </button>
+          <div class="codigo-bloco">
+            <div class="codigo-header">
+              <div class="dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <span class="nome-arquivo">style.css</span>
+              <button class="btn-copiar" onclick="copiarCodigo(this)">
+                <i class="fa-regular fa-copy"></i> Copiar
+              </button>
+            </div>
+            <pre class="codigo-pre"><code><span class="tag">body</span> {
+  <span class="prop">margin</span>: <span class="val">0</span>;
+  <span class="prop">font-family</span>: <span class="val">Arial, sans-serif</span>;
+  <span class="prop">background</span>: <span class="val">linear-gradient(135deg, #0b1020, #11182d)</span>;
+  <span class="prop">color</span>: <span class="val">#fff</span>;
+}
+
+<span class="tag">.container</span> {
+  <span class="prop">display</span>: <span class="val">flex</span>;
+  <span class="prop">justify-content</span>: <span class="val">center</span>;
+  <span class="prop">align-items</span>: <span class="val">center</span>;
+  <span class="prop">min-height</span>: <span class="val">100vh</span>;
+}
+
+<span class="tag">.container__conteudo</span> {
+  <span class="prop">text-align</span>: <span class="val">center</span>;
+  <span class="prop">padding</span>: <span class="val">2rem</span>;
+  <span class="prop">background</span>: <span class="val">rgba(255,255,255,0.05)</span>;
+  <span class="prop">border-radius</span>: <span class="val">20px</span>;
+}
+
+<span class="tag">.container__campo</span> {
+  <span class="prop">margin</span>: <span class="val">1rem 0</span>;
+}
+
+<span class="tag">input</span> {
+  <span class="prop">padding</span>: <span class="val">0.8rem</span>;
+  <span class="prop">margin-top</span>: <span class="val">0.5rem</span>;
+  <span class="prop">border-radius</span>: <span class="val">10px</span>;
+  <span class="prop">border</span>: <span class="val">none</span>;
+}
+
+<span class="tag">.container__botao</span> {
+  <span class="prop">padding</span>: <span class="val">0.8rem 1.2rem</span>;
+  <span class="prop">margin</span>: <span class="val">0.5rem</span>;
+  <span class="prop">border</span>: <span class="val">none</span>;
+  <span class="prop">border-radius</span>: <span class="val">10px</span>;
+  <span class="prop">cursor</span>: <span class="val">pointer</span>;
+  <span class="prop">background</span>: <span class="val">#7c5cff</span>;
+  <span class="prop">color</span>: <span class="val">white</span>;
+}
+
+<span class="tag">.container__botao-desabilitado</span> {
+  <span class="prop">padding</span>: <span class="val">0.8rem 1.2rem</span>;
+  <span class="prop">margin</span>: <span class="val">0.5rem</span>;
+  <span class="prop">border</span>: <span class="val">none</span>;
+  <span class="prop">border-radius</span>: <span class="val">10px</span>;
+  <span class="prop">background</span>: <span class="val">#555</span>;
+  <span class="prop">color</span>: <span class="val">white</span>;
+}</code></pre>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="secao">
+      <div class="container">
+        <div class="card">
+          <div class="autor">
+            <img src="https://avatars.githubusercontent.com/u/237313711?v=4" alt="Stella Leoni" class="autor__avatar">
+            <div>
+              <p class="autor__nome">Stella Leoni</p>
+              <p class="autor__data">04/03/2026</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape" id="rodape">
+    <div class="container rodape__conteudo">
+      <p class="rodape__copyright">
+        © 2026 Stella Bueno Leoni ·
+        <a href="index.html" style="color: var(--secondary); text-decoration: none;">Voltar ao Portfólio</a>
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    function toggleCodigo(btn) {
+      const bloco = btn.nextElementSibling;
+      btn.classList.toggle('aberto');
+      bloco.classList.toggle('visivel');
+    }
+
+    function copiarCodigo(btn) {
+      const pre = btn.closest('.codigo-bloco').querySelector('.codigo-pre code');
+      const texto = pre.textContent;
+      navigator.clipboard.writeText(texto).then(() => {
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Copiado!';
+        btn.classList.add('copiado');
+        setTimeout(() => {
+          btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copiar';
+          btn.classList.remove('copiado');
+        }, 2000);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const cards = document.querySelectorAll(".card");
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) entry.target.classList.add("mostrar");
+          });
+        },
+        { threshold: 0.15 }
+      );
+
+      cards.forEach((card) => {
+        card.classList.add("esconder");
+        observer.observe(card);
+      });
+    });
+  </script>
+</body>
+
+</html>

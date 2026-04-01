@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compra de Ingressos - Código | Stella Bueno Leoni</title>
+  <meta name="description"
+    content="Documentação e código fonte do projeto Compra de Ingressos - Stella Bueno Leoni." />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    .codigo-container {
+      margin-top: 1rem;
+    }
+
+    .codigo-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1.1rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: 0.25s ease;
+    }
+
+    .codigo-toggle:hover {
+      background: rgba(124, 92, 255, 0.1);
+      border-color: rgba(124, 92, 255, 0.3);
+    }
+
+    .codigo-toggle .tag-lang {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      letter-spacing: 0.5px;
+    }
+
+    .codigo-toggle .seta {
+      transition: transform 0.3s ease;
+      color: var(--text-soft);
+    }
+
+    .codigo-toggle.aberto .seta {
+      transform: rotate(180deg);
+    }
+
+    .codigo-bloco {
+      display: none;
+      margin-top: 0.5rem;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+    }
+
+    .codigo-bloco.visivel {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .codigo-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 1rem;
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .codigo-header .dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .codigo-header .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot.red {
+      background: rgba(255, 95, 87, 0.6);
+    }
+
+    .dot.yellow {
+      background: rgba(142, 247, 200, 0.4);
+    }
+
+    .dot.green {
+      background: rgba(124, 92, 255, 0.4);
+    }
+
+    .codigo-header .nome-arquivo {
+      font-size: 0.8rem;
+      color: var(--text-soft);
+      font-family: 'Consolas', monospace;
+    }
+
+    .btn-copiar {
+      background: none;
+      border: none;
+      color: var(--text-soft);
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      transition: 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-copiar:hover {
+      color: var(--highlight);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .btn-copiar.copiado {
+      color: var(--highlight);
+    }
+
+    .codigo-pre {
+      background: rgba(6, 8, 18, 0.8);
+      padding: 1.2rem;
+      overflow-x: auto;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 0.85rem;
+      line-height: 1.65;
+      color: var(--text-soft);
+      margin: 0;
+    }
+
+    .kw {
+      color: #7c9cff;
+    }
+
+    .str {
+      color: #8ef7c8;
+    }
+
+    .fn {
+      color: #ffd580;
+    }
+
+    .cmt {
+      color: #5a6580;
+    }
+
+    .num {
+      color: #f78c9c;
+    }
+
+    .tag {
+      color: #7c9cff;
+    }
+
+    .attr {
+      color: #ffd580;
+    }
+
+    .prop {
+      color: #ffd580;
+    }
+
+    .val {
+      color: #8ef7c8;
+    }
+
+    .conceitos-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.6rem;
+    }
+
+    @media (min-width: 700px) {
+      .conceitos-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .conceito-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      color: var(--text-soft);
+      font-size: 0.95rem;
+    }
+
+    .conceito-item i {
+      color: var(--secondary);
+      margin-top: 3px;
+      flex-shrink: 0;
+    }
+
+    .autor {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .autor__avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 2px solid rgba(124, 92, 255, 0.3);
+    }
+
+    .autor__nome {
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.15rem;
+    }
+
+    .autor__data {
+      font-size: 0.9rem;
+      color: var(--text-soft);
+    }
+
+    .tech-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .tech-badge {
+      font-size: 0.82rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(124, 92, 255, 0.12);
+      color: var(--secondary);
+      border: 1px solid rgba(124, 92, 255, 0.2);
+      font-weight: 600;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="cabecalho" id="inicio">
+    <div class="container">
+      <p class="cabecalho__tag">Stella Bueno Leoni</p>
+      <h1 class="cabecalho__titulo">Compra de Ingressos</h1>
+      <p class="cabecalho__texto">
+        Documentação e código fonte do projeto Compra de Ingressos.
+      </p>
+      <nav class="menu">
+        <a href="index.html">← Voltar ao Portfólio</a>
+        <a href="https://github.com/StellaLeoni2008/compra-de-ingressos" target="_blank">
+          <i class="fa-brands fa-github"></i> Repositório
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="secao">
+      <div class="container">
+        <h2 class="secao__titulo">Sobre o Projeto</h2>
+
+        <div class="tech-badges">
+          <span class="tech-badge">HTML</span>
+          <span class="tech-badge">CSS</span>
+          <span class="tech-badge">JavaScript</span>
+        </div>
+
+        <div class="card">
+          <p>
+            O <em>Sistema de Compra de Ingressos</em> foi desenvolvido como parte das atividades do curso
+            <strong>Alura – Lógica de Programação: praticando com desafios</strong>. O objetivo do projeto foi praticar
+            lógica de programação utilizando JavaScript, criando uma aplicação simples que simula a compra de ingressos
+            para diferentes setores de um evento. Assim como outros desafios do curso, o foco principal foi aplicar a
+            lógica de programação e a manipulação de elementos da página, sem aprofundamento em HTML e CSS.
+          </p>
+          <br>
+          <p>
+            Neste projeto, o usuário pode selecionar o tipo de ingresso desejado
+            (<strong>pista</strong>, <strong>cadeira inferior</strong> ou <strong>cadeira superior</strong>) e informar
+            a quantidade que deseja comprar. O sistema então verifica a disponibilidade de ingressos em cada setor,
+            atualiza a quantidade restante exibida na interface e informa ao usuário se a compra foi realizada com
+            sucesso ou se não há ingressos suficientes disponíveis.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="secao">
+      <div class="container">
+        <h2 class="secao__titulo">Conceitos Fundamentais Praticados</h2>
+
+        <div class="card">
+          <div class="conceitos-grid">
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Estruturação e manipulação de variáveis</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Uso de condicionais para controlar diferentes fluxos da aplicação</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Captura de valores inseridos pelo usuário</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Conversão de tipos de dados para realizar cálculos numéricos</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Manipulação do DOM para atualizar informações na página</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Verificação de disponibilidade antes de executar uma ação</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Atualização dinâmica da interface com base nas ações do usuário</span>
+            </div>
+            <div class="conceito-item">
+              <i class="fa-solid fa-code"></i>
+              <span>Organização da lógica da aplicação por meio de funções</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="secao">
+      <div class="container">
+        <h2 class="secao__titulo">Código Fonte</h2>
+
+        <div class="codigo-container">
+          <button class="codigo-toggle" onclick="toggleCodigo(this)">
+            <span>app.js</span>
+            <span class="tag-lang">JavaScript</span>
+            <span class="seta">▼</span>
+          </button>
+          <div class="codigo-bloco">
+            <div class="codigo-header">
+              <div class="dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <span class="nome-arquivo">app.js</span>
+              <button class="btn-copiar" onclick="copiarCodigo(this)">
+                <i class="fa-regular fa-copy"></i> Copiar
+              </button>
+            </div>
+            <pre class="codigo-pre"><code><span class="kw">function</span> <span class="fn">comprar</span>() {
+  <span class="kw">let</span> tipoIngresso = <span class="kw">document</span>.<span class="fn">getElementById</span>(<span class="str">'tipo-ingresso'</span>).value;
+  <span class="kw">let</span> qtd = <span class="fn">parseInt</span>(<span class="kw">document</span>.<span class="fn">getElementById</span>(<span class="str">'qtd'</span>).value);
+
+  <span class="kw">if</span> (tipoIngresso == <span class="str">'pista'</span>) {
+    <span class="fn">comprarPista</span>(qtd);
+  } <span class="kw">else</span> <span class="kw">if</span> (tipoIngresso == <span class="str">'superior'</span>) {
+    <span class="fn">comprarSuperior</span>(qtd);
+  } <span class="kw">else</span> {
+    <span class="fn">comprarInferior</span>(qtd);
+  }
+}
+
+<span class="kw">function</span> <span class="fn">comprarPista</span>(qtd) {
+  <span class="kw">let</span> pista = <span class="kw">document</span>.<span class="fn">getElementById</span>(<span class="str">'qtd-pista'</span>);
+  <span class="kw">if</span> (qtd > <span class="fn">parseInt</span>(pista.textContent)) {
+    <span class="fn">alert</span>(<span class="str">'Quantidade indisponível para pista.'</span>);
+  } <span class="kw">else</span> {
+    pista.textContent = <span class="fn">parseInt</span>(pista.textContent) - qtd;
+  }
+}
+
+<span class="kw">function</span> <span class="fn">comprarSuperior</span>(qtd) {
+  <span class="kw">let</span> superior = <span class="kw">document</span>.<span class="fn">getElementById</span>(<span class="str">'qtd-superior'</span>);
+  <span class="kw">if</span> (qtd > <span class="fn">parseInt</span>(superior.textContent)) {
+    <span class="fn">alert</span>(<span class="str">'Quantidade indisponível para cadeira superior.'</span>);
+  } <span class="kw">else</span> {
+    superior.textContent = <span class="fn">parseInt</span>(superior.textContent) - qtd;
+  }
+}
+
+<span class="kw">function</span> <span class="fn">comprarInferior</span>(qtd) {
+  <span class="kw">let</span> inferior = <span class="kw">document</span>.<span class="fn">getElementById</span>(<span class="str">'qtd-inferior'</span>);
+  <span class="kw">if</span> (qtd > <span class="fn">parseInt</span>(inferior.textContent)) {
+    <span class="fn">alert</span>(<span class="str">'Quantidade indisponível para cadeira inferior.'</span>);
+  } <span class="kw">else</span> {
+    inferior.textContent = <span class="fn">parseInt</span>(inferior.textContent) - qtd;
+  }
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="codigo-container">
+          <button class="codigo-toggle" onclick="toggleCodigo(this)">
+            <span>index.html</span>
+            <span class="tag-lang">HTML</span>
+            <span class="seta">▼</span>
+          </button>
+          <div class="codigo-bloco">
+            <div class="codigo-header">
+              <div class="dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <span class="nome-arquivo">index.html</span>
+              <button class="btn-copiar" onclick="copiarCodigo(this)">
+                <i class="fa-regular fa-copy"></i> Copiar
+              </button>
+            </div>
+            <pre class="codigo-pre"><code><span class="tag">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;html</span> <span class="attr">lang</span>=<span class="str">"pt-br"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+  <span class="tag">&lt;meta</span> <span class="attr">charset</span>=<span class="str">"UTF-8"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;meta</span> <span class="attr">name</span>=<span class="str">"viewport"</span> <span class="attr">content</span>=<span class="str">"width=device-width, initial-scale=1.0"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;title&gt;</span>Compra de Ingressos<span class="tag">&lt;/title&gt;</span>
+  <span class="tag">&lt;link</span> <span class="attr">rel</span>=<span class="str">"stylesheet"</span> <span class="attr">href</span>=<span class="str">"style.css"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+  <span class="tag">&lt;main</span> <span class="attr">class</span>=<span class="str">"container"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;h1&gt;</span>Compre seu ingresso<span class="tag">&lt;/h1&gt;</span>
+
+    <span class="tag">&lt;label</span> <span class="attr">for</span>=<span class="str">"tipo-ingresso"</span><span class="tag">&gt;</span>Tipo do ingresso<span class="tag">&lt;/label&gt;</span>
+    <span class="tag">&lt;select</span> <span class="attr">id</span>=<span class="str">"tipo-ingresso"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"pista"</span><span class="tag">&gt;</span>Pista<span class="tag">&lt;/option&gt;</span>
+      <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"inferior"</span><span class="tag">&gt;</span>Cadeira inferior<span class="tag">&lt;/option&gt;</span>
+      <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"superior"</span><span class="tag">&gt;</span>Cadeira superior<span class="tag">&lt;/option&gt;</span>
+    <span class="tag">&lt;/select&gt;</span>
+
+    <span class="tag">&lt;label</span> <span class="attr">for</span>=<span class="str">"qtd"</span><span class="tag">&gt;</span>Quantidade<span class="tag">&lt;/label&gt;</span>
+    <span class="tag">&lt;input</span> <span class="attr">id</span>=<span class="str">"qtd"</span> <span class="attr">type</span>=<span class="str">"number"</span><span class="tag">&gt;</span>
+
+    <span class="tag">&lt;button</span> <span class="attr">onclick</span>=<span class="str">"comprar()"</span><span class="tag">&gt;</span>Comprar<span class="tag">&lt;/button&gt;</span>
+
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"setores"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Pista: <span class="tag">&lt;span</span> <span class="attr">id</span>=<span class="str">"qtd-pista"</span><span class="tag">&gt;</span>100<span class="tag">&lt;/span&gt;&lt;/p&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Cadeira inferior: <span class="tag">&lt;span</span> <span class="attr">id</span>=<span class="str">"qtd-inferior"</span><span class="tag">&gt;</span>200<span class="tag">&lt;/span&gt;&lt;/p&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Cadeira superior: <span class="tag">&lt;span</span> <span class="attr">id</span>=<span class="str">"qtd-superior"</span><span class="tag">&gt;</span>400<span class="tag">&lt;/span&gt;&lt;/p&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;/main&gt;</span>
+
+  <span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="str">"app.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+<span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></code></pre>
+          </div>
+        </div>
+
+        <div class="codigo-container">
+          <button class="codigo-toggle" onclick="toggleCodigo(this)">
+            <span>style.css</span>
+            <span class="tag-lang">CSS</span>
+            <span class="seta">▼</span>
+          </button>
+          <div class="codigo-bloco">
+            <div class="codigo-header">
+              <div class="dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <span class="nome-arquivo">style.css</span>
+              <button class="btn-copiar" onclick="copiarCodigo(this)">
+                <i class="fa-regular fa-copy"></i> Copiar
+              </button>
+            </div>
+            <pre class="codigo-pre"><code><span class="tag">body</span> {
+  <span class="prop">margin</span>: <span class="val">0</span>;
+  <span class="prop">font-family</span>: <span class="val">Arial, sans-serif</span>;
+  <span class="prop">background</span>: <span class="val">linear-gradient(135deg, #0b1020, #11182d)</span>;
+  <span class="prop">color</span>: <span class="val">#fff</span>;
+}
+
+<span class="tag">.container</span> {
+  <span class="prop">max-width</span>: <span class="val">600px</span>;
+  <span class="prop">margin</span>: <span class="val">0 auto</span>;
+  <span class="prop">padding</span>: <span class="val">2rem</span>;
+  <span class="prop">text-align</span>: <span class="val">center</span>;
+}
+
+<span class="tag">select, input</span> {
+  <span class="prop">display</span>: <span class="val">block</span>;
+  <span class="prop">width</span>: <span class="val">100%</span>;
+  <span class="prop">padding</span>: <span class="val">0.8rem</span>;
+  <span class="prop">margin</span>: <span class="val">0.8rem 0</span>;
+  <span class="prop">border-radius</span>: <span class="val">10px</span>;
+  <span class="prop">border</span>: <span class="val">none</span>;
+}
+
+<span class="tag">button</span> {
+  <span class="prop">padding</span>: <span class="val">0.8rem 1.2rem</span>;
+  <span class="prop">border</span>: <span class="val">none</span>;
+  <span class="prop">border-radius</span>: <span class="val">10px</span>;
+  <span class="prop">background</span>: <span class="val">#7c5cff</span>;
+  <span class="prop">color</span>: <span class="val">#fff</span>;
+  <span class="prop">cursor</span>: <span class="val">pointer</span>;
+}
+
+<span class="tag">.setores</span> {
+  <span class="prop">margin-top</span>: <span class="val">2rem</span>;
+  <span class="prop">text-align</span>: <span class="val">left</span>;
+}</code></pre>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="secao">
+      <div class="container">
+        <div class="card">
+          <div class="autor">
+            <img src="https://avatars.githubusercontent.com/u/237313711?v=4" alt="Stella Leoni" class="autor__avatar">
+            <div>
+              <p class="autor__nome">Stella Leoni</p>
+              <p class="autor__data">05/03/2026</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape" id="rodape">
+    <div class="container rodape__conteudo">
+      <p class="rodape__copyright">
+        © 2026 Stella Bueno Leoni ·
+        <a href="index.html" style="color: var(--secondary); text-decoration: none;">Voltar ao Portfólio</a>
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    function toggleCodigo(btn) {
+      const bloco = btn.nextElementSibling;
+      btn.classList.toggle('aberto');
+      bloco.classList.toggle('visivel');
+    }
+
+    function copiarCodigo(btn) {
+      const pre = btn.closest('.codigo-bloco').querySelector('.codigo-pre code');
+      const texto = pre.textContent;
+      navigator.clipboard.writeText(texto).then(() => {
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Copiado!';
+        btn.classList.add('copiado');
+        setTimeout(() => {
+          btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copiar';
+          btn.classList.remove('copiado');
+        }, 2000);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const cards = document.querySelectorAll(".card");
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) entry.target.classList.add("mostrar");
+          });
+        },
+        { threshold: 0.15 }
+      );
+
+      cards.forEach((card) => {
+        card.classList.add("esconder");
+        observer.observe(card);
+      });
+    });
+  </script>
+</body>
+
+</html>
